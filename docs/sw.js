@@ -1,8 +1,9 @@
 /* 방구석 셰프 (GitHub Pages) Service Worker
- * 앱 화면과 이미지를 미리 저장해 두어 오프라인에서도 전체 기능이 동작합니다.
- * 파일을 바꾼 뒤에는 VERSION 을 올려 주세요.
+ * - 화면/코드(html, js, css, json) : 네트워크 우선 → 배포하면 바로 반영, 오프라인이면 저장본
+ * - 이미지/폰트 : 저장본 우선 (+ 백그라운드 갱신)
+ * 처음 방문 때 전체를 미리 저장해 두어 오프라인에서도 모든 기능이 동작합니다.
  */
-const VERSION = 'chef-pages-v3';
+const VERSION = 'chef-pages-v4';
 
 const FOOD_IMAGES = ['감자', '계란', '당근', '마늘', '버섯', '시금치', '양배추', '양파', '콩나물', '토마토']
   .map((n) => './assets/images/' + encodeURIComponent(n) + '.jpg');
@@ -24,7 +25,12 @@ const PRECACHE = [
 ];
 
 self.addEventListener('install', (event) => {
-  event.waitUntil(caches.open(VERSION).then((c) => c.addAll(PRECACHE)).then(() => self.skipWaiting()));
+  // cache: 'reload' → 브라우저 HTTP 캐시(깃허브 10분 캐시)를 건너뛰고 최신 파일 저장
+  event.waitUntil(
+    caches.open(VERSION)
+      .then((c) => c.addAll(PRECACHE.map((u) => new Request(u, { cache: 'reload' }))))
+      .then(() => self.skipWaiting())
+  );
 });
 
 self.addEventListener('activate', (event) => {
@@ -38,18 +44,36 @@ self.addEventListener('activate', (event) => {
 self.addEventListener('fetch', (event) => {
   const req = event.request;
   if (req.method !== 'GET') return;
-  // 화면 이동은 항상 앱 셸(index.html)
-  const key = req.mode === 'navigate' ? './index.html' : req;
-  event.respondWith(staleWhileRevalidate(req, key));
+  const url = new URL(req.url);
+  const sameOrigin = url.origin === location.origin;
+
+  if (req.mode === 'navigate') {
+    // 화면 이동은 항상 앱 셸(index.html)
+    event.respondWith(networkFirst(new Request('./index.html', { cache: 'no-cache' }), './index.html'));
+  } else if (sameOrigin && /\.(js|css|json|html)$/i.test(url.pathname)) {
+    event.respondWith(networkFirst(new Request(req.url, { cache: 'no-cache' }), req.url));
+  } else {
+    event.respondWith(staleWhileRevalidate(req));
+  }
 });
 
-// 저장된 것을 바로 보여주고, 네트워크로 받은 최신 파일은 다음 실행 때 반영
-async function staleWhileRevalidate(req, key) {
+async function networkFirst(req, key) {
   const cache = await caches.open(VERSION);
-  const cached = await cache.match(key, { ignoreSearch: true });
+  try {
+    const res = await fetch(req);
+    if (res.ok) cache.put(key, res.clone());
+    return res;
+  } catch (e) {
+    return (await cache.match(key, { ignoreSearch: true })) || Response.error();
+  }
+}
+
+async function staleWhileRevalidate(req) {
+  const cache = await caches.open(VERSION);
+  const cached = await cache.match(req, { ignoreSearch: true });
   const network = fetch(req)
     .then((res) => {
-      if (res && (res.ok || res.type === 'opaque')) cache.put(key, res.clone());
+      if (res && (res.ok || res.type === 'opaque')) cache.put(req, res.clone());
       return res;
     })
     .catch(() => cached || Response.error());

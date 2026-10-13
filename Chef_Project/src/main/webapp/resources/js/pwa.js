@@ -2,7 +2,7 @@
 (function () {
 	if ('serviceWorker' in navigator) {
 		window.addEventListener('load', function () {
-			navigator.serviceWorker.register('./sw.js').catch(function (e) { console.warn('SW 등록 실패', e); });
+			navigator.serviceWorker.register('./sw.js', { updateViaCache: 'none' }).catch(function (e) { console.warn('SW 등록 실패', e); });
 		});
 	}
 

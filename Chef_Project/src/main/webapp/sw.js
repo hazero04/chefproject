@@ -1,8 +1,9 @@
 /* 방구석 셰프 Service Worker
  * - 화면(JSP) : 네트워크 우선, 오프라인이면 마지막으로 본 화면 → offline.html
- * - 정적 파일(css/js/이미지/폰트) : 캐시 우선 + 백그라운드 갱신
+ * - css/js : 네트워크 우선 (수정하면 바로 반영), 오프라인이면 저장본
+ * - 이미지/폰트 : 캐시 우선 + 백그라운드 갱신
  */
-const VERSION = 'chef-v2';
+const VERSION = 'chef-v3';
 const STATIC_CACHE = VERSION + '-static';
 const PAGE_CACHE = VERSION + '-pages';
 
@@ -24,7 +25,12 @@ const PRECACHE = [
 const NO_CACHE = /(addCart|deleteCart|deleteRefri|deleteFood|process\w*|logout|thankCust|login|j_security_check)/i;
 
 self.addEventListener('install', (event) => {
-  event.waitUntil(caches.open(STATIC_CACHE).then((c) => c.addAll(PRECACHE)).then(() => self.skipWaiting()));
+  // cache: 'reload' → 브라우저 HTTP 캐시를 건너뛰고 최신 파일 저장
+  event.waitUntil(
+    caches.open(STATIC_CACHE)
+      .then((c) => c.addAll(PRECACHE.map((u) => new Request(u, { cache: 'reload' }))))
+      .then(() => self.skipWaiting())
+  );
 });
 
 self.addEventListener('activate', (event) => {
@@ -44,7 +50,11 @@ self.addEventListener('fetch', (event) => {
     event.respondWith(networkFirst(req, !NO_CACHE.test(url.pathname)));
     return;
   }
-  if (url.origin !== location.origin || /\.(css|js|png|jpe?g|gif|webp|svg|woff2?|json)$/i.test(url.pathname)) {
+  if (url.origin === location.origin && /\.(css|js|json)$/i.test(url.pathname)) {
+    event.respondWith(networkFirstStatic(req));
+    return;
+  }
+  if (url.origin !== location.origin || /\.(png|jpe?g|gif|webp|svg|woff2?)$/i.test(url.pathname)) {
     event.respondWith(staleWhileRevalidate(req));
   }
 });
@@ -59,6 +69,17 @@ async function networkFirst(req, cacheable) {
     return res;
   } catch (e) {
     return (await caches.match(req)) || (await caches.match('./offline.html'));
+  }
+}
+
+async function networkFirstStatic(req) {
+  const cache = await caches.open(STATIC_CACHE);
+  try {
+    const res = await fetch(new Request(req.url, { cache: 'no-cache' }));
+    if (res.ok) cache.put(req.url.split('?')[0], res.clone());
+    return res;
+  } catch (e) {
+    return (await cache.match(req, { ignoreSearch: true })) || Response.error();
   }
 }
 

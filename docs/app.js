@@ -534,8 +534,15 @@
 
   /* ---------- PWA ---------- */
   if ('serviceWorker' in navigator) {
+    // 업데이트가 적용되면(이전 버전이 있던 경우에만) 한 번 새로고침해서 최신 화면 표시
+    var hadController = !!navigator.serviceWorker.controller, reloaded = false;
+    navigator.serviceWorker.addEventListener('controllerchange', function () {
+      if (hadController && !reloaded) { reloaded = true; location.reload(); }
+    });
     window.addEventListener('load', function () {
-      navigator.serviceWorker.register('./sw.js').catch(function (e) { console.warn('SW 등록 실패', e); });
+      navigator.serviceWorker.register('./sw.js', { updateViaCache: 'none' })
+        .then(function (reg) { reg.update(); })
+        .catch(function (e) { console.warn('SW 등록 실패', e); });
     });
   }
   var deferredPrompt = null;
