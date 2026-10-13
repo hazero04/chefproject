@@ -5,9 +5,7 @@
 
 <html>
 <head>
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-<link rel="stylesheet" href="./resources/css/bootstrap.min.css" />
-
+<%@ include file="head.jsp" %>
 <title>식재료마트 정보</title>
 <script type="text/javascript">
    function addToCart() {
@@ -21,16 +19,8 @@
 
 </head>
 <body>
-<div class="container py-4">
    <%@ include file="top.jsp" %>
-   
-   <div class="p-5 mb-4 bg-body-tertiary rounded-3">
-      <div class="container-fluid py-5">
-         <h1 class="display-5 fw-bold">식재료 정보</h1>
-         <p class="col-md-8 fs-4">FoodInfo></p>      
-      </div>
-   </div>
-   
+
    <!-- 데이터베이스와 연결 -->
    <%@ include file="dbconnect.jsp" %>
    <%
@@ -67,25 +57,50 @@
       if (pstmt!=null)
          pstmt.close();
    %>
-   <div class="row align-items-md-stretch">
-      <div class="col-md-5">
-         <img src="./resources/images/<%=food.getFilename() %>" style="width: 70%">
+<main class="g-app">
+   <div class="g-page-head">
+      <div class="d-flex align-items-center">
+         <a href="./foodList.jsp" class="g-back" aria-label="목록으로"><i class="bi bi-chevron-left"></i></a>
+         <div>
+            <h1>식재료 정보</h1>
+            <p>FoodInfo</p>
+         </div>
       </div>
-   
-      <div class="col-md-12">
-         <h3><b><%=food.getFoodname() %></b></h3>
-         <p> <%=food.getDescription() %>
-         <p> <b>가격</b> : <%=food.getPrice() %>
-         <p> <b>유통기한</b> : <%=food.getDate() %>
-         <p> <b>재고수</b> : <%=food.getUnitsInStock() %>
-         <h4><%=food.getPrice() %>원</h4>
-         <p> <form name="addForm" action="./addCart.jsp?foodname=<%=food.getFoodname() %>" method="post">
-            <a href="#" class="btn btn-info" onclick="addToCart()">식재료 주문 &raquo;</a>
-            <a href="./foodList.jsp" class="btn btn-secondary">식재료 목록 &raquo;</a>
+   </div>
+
+   <div class="row g-4 g-lg-5 g-detail">
+      <div class="col-lg-6">
+         <div class="g-detail-img">
+            <img src="./resources/images/<%=food.getFilename() %>" alt="<%=food.getFoodname() %>">
+         </div>
+      </div>
+
+      <div class="col-lg-6">
+         <div class="d-flex justify-content-between align-items-start">
+            <div>
+               <h1><%=food.getFoodname() %></h1>
+               <span class="g-chip green">재고 <%=food.getUnitsInStock() %>개</span>
+            </div>
+            <span class="g-big-price"><%=food.getPrice() %>원</span>
+         </div>
+
+         <div class="mt-4">
+            <div class="g-info-row d-block">
+               <div class="mb-2">상세 설명</div>
+               <span class="d-block lh-lg"><%=food.getDescription() %></span>
+            </div>
+            <div class="g-info-row">가격 <span><%=food.getPrice() %>원</span></div>
+            <div class="g-info-row">유통기한 <span><%=food.getDate() %></span></div>
+            <div class="g-info-row">재고수 <span><%=food.getUnitsInStock() %>개</span></div>
+         </div>
+
+         <form name="addForm" action="./addCart.jsp?foodname=<%=java.net.URLEncoder.encode(String.valueOf(food.getFoodname()), "UTF-8") %>" method="post" class="mt-4 d-grid gap-2">
+            <a href="#" class="g-btn block" onclick="addToCart(); return false;"><i class="bi bi-basket2-fill"></i> 식재료 주문 (장바구니 담기)</a>
+            <a href="./foodList.jsp" class="g-btn ghost block">식재료 목록</a>
          </form>
       </div>
    </div>
    <jsp:include page="footer.jsp" />
-</div>
+</main>
 </body>
 </html>

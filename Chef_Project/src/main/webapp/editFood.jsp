@@ -2,7 +2,7 @@
 <%@ page import="java.sql.*" %>
 <html>
 <head>
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+<%@ include file="head.jsp" %>
 <title>재료 수정</title>
 <script type="text/javascript">
 	function deleteConfirm(id) {
@@ -17,16 +17,17 @@
 	String edit=request.getParameter("edit");
 %>
 <body>
-<div class="container py-4">
 	<%@ include file="top.jsp" %>
-	
-	<div class="p-5 mb-4 bg-body-tertiary rounded-3">
-		<div class="container-fluid py-5">
-		<h1 class="display-5 fw-bold">식재료 수정</h1>
-		<p class="col-md-8 fs-4">FoodEditing</p>
+<main class="g-app">
+
+	<div class="g-page-head">
+		<div>
+			<h1>식재료 수정</h1>
+			<p>FoodEditing · 수정할 식재료를 선택하세요</p>
 		</div>
 	</div>
-	<%@ include file="dbconnect.jsp" %> <div class="row align-items-md-stretch text-center">
+	<%@ include file="dbconnect.jsp" %>
+	<div class="row g-3">
 	<%
 		PreparedStatement pstmt=null;
 		ResultSet rs=null;
@@ -35,11 +36,13 @@
 		rs=pstmt.executeQuery();
 		while (rs.next()) {
 	%>
-	<div class="col-md-4">
-		<div class="h-100 p-2 round-3">
-			<img src="./resources/images/<%=rs.getString("f_fileName")%>" style="width: 250px; height: 350px;" />
-			<p> <h5><b><%=rs.getString("f_foodname") %></b></h5> 
-			<br> <%=rs.getString("f_place") %> | <%=rs.getString("f_price") %>원
+	<div class="col-6 col-md-4 col-lg-3">
+		<div class="g-card">
+			<div class="g-card-img">
+				<img src="./resources/images/<%=rs.getString("f_fileName")%>" alt="<%=rs.getString("f_foodname") %>" />
+			</div>
+			<p class="g-card-title"><%=rs.getString("f_foodname") %></p>
+			<div class="g-card-sub"><%=rs.getString("f_place") %> | <%=rs.getString("f_price") %>원</div>
 			<%
     			// 상세 설명 가져오기
     			String editDesc = rs.getString("f_description");
@@ -48,22 +51,24 @@
         			editDesc = editDesc.substring(0, 60) + "...";
     			}
 			%>
-			<p> <%=editDesc%> </p>
-			
-			<p> <%=rs.getString("f_price") %>원
-			<p> <%
-				if (edit.equals("change")) {
-				%>
-			<a href="./changeFood.jsp?id=<%=rs.getString("f_foodname") %>" class="btn btn-success" role="button"> 수정 &raquo;</a>
+			<p class="g-card-desc"><%=editDesc%></p>
+
+			<div class="g-card-foot">
+				<span class="g-price"><%=rs.getString("f_price") %>원</span>
 			<%
-				} else if (edit.equals("delete")) {
+				if ("change".equals(edit)) {
+				%>
+				<a href="./changeFood.jsp?id=<%=java.net.URLEncoder.encode(rs.getString("f_foodname"), "UTF-8") %>" class="g-add" role="button" aria-label="수정"><i class="bi bi-pencil"></i></a>
+			<%
+				} else if ("delete".equals(edit)) {
 			%>
-			<a href="#" onclick="deleteConfirm('<%=rs.getString("f_id")%>')" class="btn btn-danger" role="button">삭제 &raquo;</a>
+				<a href="#" onclick="deleteConfirm('<%=rs.getString("f_id")%>')" class="g-add danger" role="button" aria-label="삭제"><i class="bi bi-trash3"></i></a>
 			<%
 				}
 			%>
 			</div>
 		</div>
+	</div>
 		<%
 			}
 			if (rs!=null) rs.close();
@@ -72,6 +77,6 @@
 		%>
 	</div>
 	<%@ include file="footer.jsp" %>
-</div>
+</main>
 </body>
 </html>

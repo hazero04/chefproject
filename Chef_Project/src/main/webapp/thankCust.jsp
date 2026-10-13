@@ -6,7 +6,7 @@
 <%@ include file="dbconnect.jsp" %>
 <html>
 <head>
- 	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+   <%@ include file="head.jsp" %>
    <title>주문 완료 및 감사창</title>
 </head>
 <body>
@@ -28,26 +28,23 @@
       }
    %>
    
-   <div class="container py-4">
        <%@ include file="top.jsp" %>
+   <main class="g-app">
 
-        <div class="p-5 mb-4 bg-body-tertiary rounded-3">
-            <div class="container-fluid py-5">
-                <h1 class="display-5 fw-bold">주문 완료</h1>
-                <p class="col-md-8 fs-4">Order Completed</p>
+        <div class="g-success">
+            <div class="g-success-ico"><i class="bi bi-check-lg"></i></div>
+            <h1>🎁주문해주셔서 감사합니다🎁</h1>
+            <p class="mt-3">주문은 <b class="text-success"><%out.println(shipping_shippingDate); %></b>에 배송될 예정입니다!</p>
+            <p class="small">주문번호: <%out.println(session.getId()); %></p>
+            <p class="small">결제한 식재료는 <b>나의 냉장고</b>에 저장됩니다.</p>
+
+            <div class="d-grid gap-2 mt-4">
+                <a href="./myRefri.jsp" class="g-btn block">나의 냉장고 보기</a>
+                <a href="./foodList.jsp" class="g-btn ghost block">&laquo; 식재료 목록</a>
             </div>
         </div>
-        
-        <div class="row align-items-md-stretch">
-           <h2 class="alert alert-danger">🎁주문해주셔서 감사합니다🎁</h2>
-                <p> 주문은 <%out.println(shipping_shippingDate); %>에 배송될 예정입니다!
-                <p> 주문번호: <%out.println(session.getId()); %> </p>
-        </div>
-        <div class="container">
-            <p> <a href="./foodList.jsp" class="btn btn-secondary"> &laquo; 식재료 목록 </a>
-        </div>
         <%@ include file="footer.jsp" %>
-    </div>
+   </main>
 </body>
 </html>
 <%

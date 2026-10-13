@@ -2,18 +2,17 @@
 <%@ page import="java.sql.*" %>
 <html>
 <head>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <%@ include file="head.jsp" %>
     <title>나의 냉장고</title>
 </head>
-<body class="d-flex flex-column min-vh-100">
-
-<div class="container py-4 flex-grow-1">
+<body>
     <%@ include file="top.jsp" %>
-    
-    <div class="p-5 mb-4 bg-body-tertiary rounded-3">
-        <div class="container-fluid py-5">
-            <h1 class="display-5 fw-bold">나의 냉장고</h1>
-            <p class="col-md-8 fs-4">My Refrigerator</p>
+<main class="g-app">
+
+    <div class="g-page-head">
+        <div>
+            <h1>나의 냉장고</h1>
+            <p>My Refrigerator · 구매한 식재료와 유통기한을 확인하세요</p>
         </div>
     </div>
 
@@ -38,20 +37,19 @@
             if (rsWarn.isBeforeFirst()) {
                 hasWarning = true;
     %>
-                <div class="alert alert-danger my-4 shadow-sm" role="alert">
-                    <h4 class="alert-heading fw-bold mb-3">경고 : 유통기한 임박 식재료 알림!</h4>
-                    <hr>
+                <div class="g-alert" role="alert">
+                    <h4><i class="bi bi-exclamation-triangle-fill"></i> 경고 : 유통기한 임박 식재료 알림!</h4>
+                    <div class="g-alert-items">
     <%
                 while (rsWarn.next()) {
                     String warnFoodName = rsWarn.getString("f_foodname");
                     int dDay = rsWarn.getInt("d_day");
     %>
-                    <p class="mb-2 fw-bold text-danger">
-                        <%= warnFoodName %> <span class="badge bg-danger ms-1">D-<%= dDay %></span>
-                    </p>
+                        <span class="g-alert-item"><%= warnFoodName %><em>D-<%= dDay %></em></span>
     <%
                 }
     %>
+                    </div>
                     <p class="mt-3 mb-0 text-muted" style="font-size: 0.9rem;">빨리 요리해서 냉장고를 비워볼까요? 😋</p>
                 </div>
     <%
@@ -64,7 +62,7 @@
        
     %>
 
-    <div class="row row-cols-1 row-cols-md-3 g-4 mt-2">
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-3">
     <%
         PreparedStatement pstmt = null;
         ResultSet rs = null;
@@ -79,11 +77,13 @@
             // 데이터가 하나도 없을 때 텅 비어있다는 메시지 출력
             if (!rs.isBeforeFirst()) {
     %>
-                <div class="col-12 w-100 d-flex justify-content-center py-5 my-5">
-                    <p class="fs-3 fw-bold text-secondary text-center">
-                        🧊 냉장고가 텅~ 비어 있습니다! <br>
-                        <span class="fs-4 fw-normal mt-2 d-block">장바구니에 맛있는 재료를 담아 채워보세요~~ 🛒</span>
-                    </p>
+                <div class="col-12 w-100">
+                    <div class="g-empty">
+                        <div class="g-empty-ico">🧊</div>
+                        <b>냉장고가 텅~ 비어 있습니다!</b>
+                        장바구니에 맛있는 재료를 담아 채워보세요~~ 🛒
+                        <div class="mt-4"><a href="./foodList.jsp" class="g-btn sm">식재료 마트 가기</a></div>
+                    </div>
                 </div>
     <%
             }
@@ -104,36 +104,35 @@
            
    
             <div class="col">
-                <div class="card h-100 shadow-sm border-secondary-subtle">
-                    <img src="<%= imagePath %>" class="card-img-top" alt="<%= foodName %>" style="height: 220px; object-fit: cover;" onerror="this.src='https://placehold.co/300x220?text=No+Image';">
-                    
-                    <div class="card-body d-flex flex-column">
-                        <h4 class="card-title fw-bold text-dark mb-2"><%= foodName %></h4>
-                        
-                        <p class="card-text text-muted mb-3" style="font-size: 0.95rem; min-height: 48px;">
-                            <%= (description != null && !description.trim().isEmpty()) ? description : "등록된 상세 설명이 없습니다." %>
-                        </p>
-                        
-                        <hr class="text-secondary-subtle my-2 mt-auto">
-                        
-                        <ul class="list-unstyled mb-3" style="font-size: 0.9rem;">
-                            <li class="mb-1"><strong>가격:</strong> <%= price %>원</li>
-                            <li class="mb-1"><strong>유통기한:</strong><%= rDate %></span></li>
-                            <li class="mb-1"><strong>구매처:</strong> <%= (place != null && !place.trim().isEmpty()) ? place : "미지정" %></li>
-                        </ul>
-                        
-                        <div class="d-flex justify-content-between align-items-center mt-2">
-                           <span class="badge bg-success fs-6 p-2">현재 수량: <%= count %>개</span>
-                            
-                            <a href="deleteRefri.jsp?foodname=<%= java.net.URLEncoder.encode(foodName, "UTF-8") %>" 
-                               class="btn btn-outline-danger btn-sm fw-bold" 
-                               onclick="return confirm('<%= foodName %> 항목을 냉장고에서 삭제하시겠습니까?');">
-                               삭제 
-                            </a>
+                <div class="g-card">
+                    <div class="g-card-img" style="aspect-ratio: 16 / 10;">
+                        <img src="<%= imagePath %>" alt="<%= foodName %>" onerror="this.src='https://placehold.co/300x220/F2F3F2/7C7C7C?text=No+Image';">
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-start gap-2">
+                        <p class="g-card-title fs-5"><%= foodName %></p>
+                        <span class="g-chip green flex-shrink-0">현재 수량: <%= count %>개</span>
+                    </div>
+
+                    <p class="g-card-desc">
+                        <%= (description != null && !description.trim().isEmpty()) ? description : "등록된 상세 설명이 없습니다." %>
+                    </p>
+
+                    <div class="mb-3">
+                        <div class="g-info-row py-2 fs-6">유통기한 <span><%= rDate %></span></div>
+                        <div class="g-info-row py-2 fs-6">구매처 <span><%= (place != null && !place.trim().isEmpty()) ? place : "미지정" %></span></div>
+                    </div>
+
+                    <div class="g-card-foot">
+                        <span class="g-price"><%= price %>원</span>
+                        <a href="deleteRefri.jsp?foodname=<%= java.net.URLEncoder.encode(foodName, "UTF-8") %>"
+                           class="g-add danger" aria-label="삭제"
+                           onclick="return confirm('<%= foodName %> 항목을 냉장고에서 삭제하시겠습니까?');">
+                           <i class="bi bi-trash3"></i>
+                        </a>
+                    </div>
+                </div>
             </div>
-           </div>
-          </div>
-         </div>
     <%
             } //반복문 종료
             
@@ -145,11 +144,8 @@
             if (connect != null) connect.close();
     %>
     </div>
-</div> <footer class="mt-auto py-3 bg-light border-top">
-    <div class="container text-center">
-        <jsp:include page="footer.jsp" />
-    </div>
-</footer>
+    <jsp:include page="footer.jsp" />
+</main>
 
 </body>
 </html>

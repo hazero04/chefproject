@@ -1,25 +1,33 @@
 <%@ page contentType="text/html; charset=utf-8" %>
 <%@ page import="java.sql.*" %>
+<%
+   //POST로 넘어온 한글 식재료명이 깨지지 않도록 설정
+   request.setCharacterEncoding("UTF-8");
+%>
 <html>
 <head>
-   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+   <%@ include file="head.jsp" %>
     <title>체크박스와 레시피추천</title>
 </head>
 <body>
-<div class="container py-4">
    <%@ include file="top.jsp" %>
-   <div class="p-5 mb-4 bg-body-tertiary rounded-3">
-      <div class="container-fluid py-5">
-         <h1 class="display-5 fw-bold text-success">🎉 레시피 추천 🎉</h1>
-         <p class="col-md-8 fs-4">사용하고 싶은 식재료를 선택하시면 레시피를 추천해드립니다.</p>
+<main class="g-app">
+   <section class="g-banner mt-3">
+      <div class="g-banner-body">
+         <h1>🎉 레시피 추천 🎉</h1>
+         <p>사용하고 싶은 식재료를 선택하시면 레시피를 추천해드립니다.</p>
       </div>
-   </div>
+      <div class="g-banner-veg" aria-hidden="true">🍳🥘</div>
+   </section>
    
    <!-- 식재료 10개 체크박스 -->
    <form action="./checkbox.jsp" method="post">
-      <div class="card p-4 mb-4 shadow-sm">
-         <h5 class="mb-4 text-secondary">🥬 어떤 식재료를 사용하고 싶은가요? (복수 선택 가능)</h5>
-         <div class="row">
+      <div class="g-section-head">
+         <h2>🥬 어떤 식재료를 사용하고 싶은가요?</h2>
+         <span class="g-chip green">복수 선택 가능</span>
+      </div>
+      <div>
+         <div class="row g-2">
          
          <%@ include file="dbconnect.jsp" %>
          <%
@@ -36,11 +44,11 @@
                while(rs.next()) {
                   String foodName = rs.getString("f_foodname");
          %>
-            <div class="col-md-3 mb-3">
-               <div class="form-check fs-5">
-                  <input class="form-check-input" type="checkbox" name="selectFood" value="<%= foodName %>" id="<%= foodName %>">
-                  <label class="form-check-label" for="<%= foodName %>"><%= foodName %></label>
-               </div>
+            <div class="col-6 col-md-3">
+               <label class="g-pick">
+                  <input type="checkbox" name="selectFood" value="<%= foodName %>" id="<%= foodName %>">
+                  <span><%= foodName %></span>
+               </label>
             </div>
          <%
                }
@@ -55,8 +63,8 @@
          %>
          </div>
          
-         <div class="text-center mt-3">
-            <button type="submit" class="btn btn-success btn-lg px-5">레시피 추천받기 ✨</button>
+         <div class="text-center mt-4">
+            <button type="submit" class="g-btn px-5">레시피 추천받기 ✨</button>
          </div>
       </div>
    </form>
@@ -68,9 +76,10 @@
    
       if (selectFood != null && selectFood.length > 0) {
    %>
-      <hr class="my-5">
-      <h3 class="mb-4 text-dark">💡 레시피를 추천해드릴게요!! </h3>
-      <div class="row">
+      <div class="g-section-head mt-5">
+         <h2>💡 레시피를 추천해드릴게요!!</h2>
+      </div>
+      <div class="row g-3">
    <%
          try {
             //사용자가 고른 재료 수만큼 SQL LIKE 쿼리를 동적으로 생성.
@@ -98,19 +107,16 @@
             while (rs.next()) {
                count++;
    %>
-            <div class="col-md-6 mb-4">
-               <div class="card h-100 border-success shadow">
-                  <div class="card-body p-4">
-                     <span class="badge bg-success mb-2">추천 요리 <%= count %></span>
-                     <h3 class="card-title text-success"><b><%= rs.getString("r_name") %></b></h3>
-                     <p class="card-text text-muted mt-3"><b>필요한 재료:</b> <%= rs.getString("r_ingredients") %></p>
-                     
-                     <hr>
-                     
-                     <h5 class="text-dark mt-3"><b>🍳 조리 순서</b></h5>
-                     <p class="card-text text-secondary" style="line-height: 1.6;">
-                        <%= rs.getString("r_manual") %>
-                     </p>
+            <div class="col-md-6">
+               <div class="g-recipe">
+                  <div class="g-recipe-head">
+                     <span class="g-chip">추천 요리 <%= count %></span>
+                     <h3><%= rs.getString("r_name") %></h3>
+                  </div>
+                  <div class="g-recipe-body">
+                     <p class="mb-3"><b>필요한 재료:</b> <%= rs.getString("r_ingredients") %></p>
+                     <h5>🍳 조리 순서</h5>
+                     <p class="mb-0"><%= rs.getString("r_manual") %></p>
                   </div>
                </div>
             </div>
@@ -119,7 +125,7 @@
             
             //매칭되는 레시피가 아예 없을 경우
             if (count == 0) {
-               out.println("<div class='alert alert-light text-center w-100 border py-4'>선택하신 식재료가 포함된 추천 레시피가 없습니다. 다른 재료를 조합해 보세요!</div>");
+               out.println("<div class='col-12'><div class='g-empty'><div class='g-empty-ico'>🥕</div><b>추천 레시피가 없어요</b>선택하신 식재료가 포함된 추천 레시피가 없습니다. 다른 재료를 조합해 보세요!</div></div>");
             }
          } catch(Exception e) {
             e.printStackTrace();
@@ -139,6 +145,6 @@
       
    <!-- 하단 -->   
    <%@ include file = "footer.jsp" %>
-</div>
+</main>
 </body>
 </html>

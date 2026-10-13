@@ -41,75 +41,85 @@
 
 <html>
 <head>
-   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+   <%@ include file="head.jsp" %>
     <title>주문 정보</title>
 </head>
 <body>
-    <div class="container py-4">
         <%@ include file="top.jsp" %>
+    <main class="g-app">
 
-        <div class="p-5 mb-4 bg-body-tertiary rounded-3">
-            <div class="container-fluid py-5">
-                <h1 class="display-5 fw-bold">주문 정보</h1>
-                <p class="col-md-8 fs-4">Order Info</p>
+        <div class="g-page-head">
+            <div class="d-flex align-items-center">
+                <a href="./shippingCart.jsp?cartId=<%=shipping_cartId%>" class="g-back" aria-label="이전"><i class="bi bi-chevron-left"></i></a>
+                <div>
+                    <h1>주문 정보</h1>
+                    <p>Order Info</p>
+                </div>
             </div>
         </div>
 
-        <div class="row align-items-md-stretch alert alert-success">
-            <div class="text-center">
-               <h1>영수증</h1>
-            </div>
-            <div class="row justify-content-between">
-               <div class="col-4" align="left">
-                   <strong>배송 주소</strong><br>
-                    성명 : <%out.println(shipping_name); %><br>
-                    우편번호 : <%out.println(shipping_zipCode); %><br>
-                    주소 : <%out.println(shipping_addressName); %>(<%out.println(shipping_country); %>)<br>
+        <div class="row g-4">
+            <div class="col-lg-8">
+                <div class="g-receipt">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h2 class="fs-4 fw-bold m-0"><i class="bi bi-receipt text-success me-1"></i> 영수증</h2>
+                        <span class="g-chip green">배송일 <%out.println(shipping_shippingDate); %></span>
+                    </div>
+                    <table>
+                        <thead>
+                        <tr>
+                            <th>식재료명</th>
+                            <th class="text-end">가격</th>
+                            <th class="text-center">수량</th>
+                            <th class="text-end">합계</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                   <%
+                           int sum = 0;
+                      //세션에서 전체장바구니 FoodCartList 가져오기
+                            ArrayList<Food> FoodCartList = (ArrayList<Food>) session.getAttribute("CheckoutList");
+                            if (FoodCartList == null) 
+                               FoodCartList = new ArrayList<Food>();
+                            for (int i = 0; i < FoodCartList.size(); i++) {
+                               Food food = FoodCartList.get(i);
+                                int total = food.getPrice() * food.getQuantity();
+                                sum = sum + total;
+                        %>
+                        <tr>
+                            <td><%=food.getFoodname()%></td>
+                            <td class="text-end"><%=food.getPrice()%>원</td>
+                            <td class="text-center"><%=food.getQuantity()%>개</td>
+                            <td class="text-end"><%=total%>원</td>
+                        </tr>
+                        <%
+                            }
+                        %>
+                        </tbody>
+                        <tfoot>
+                        <tr>
+                            <td colspan="3">총 금액</td>
+                            <td class="text-end text-success"><%=sum %>원</td>
+                        </tr>
+                        </tfoot>
+                    </table>
                 </div>
-                <div class="col-4" align="right">
-                    <p><em>배송일: <%out.println(shipping_shippingDate); %></em>
-                </div>
             </div>
-            <div class="py-5">
-                <table class="table table-hover">
-                   <tr>
-                        <th class="text-center">식재료명</th>
-                        <th class="text-center">가격</th>
-                        <th class="text-center">수량</th>
-                        <th class="text-center">합계</th>
-                    </tr>
-               <%
-                       int sum = 0;
-                  //세션에서 전체장바구니 FoodCartList 가져오기
-                        ArrayList<Food> FoodCartList = (ArrayList<Food>) session.getAttribute("CheckoutList");
-                        if (FoodCartList == null) 
-                           FoodCartList = new ArrayList<Food>();
-                        for (int i = 0; i < FoodCartList.size(); i++) {
-                           Food food = FoodCartList.get(i);
-                            int total = food.getPrice() * food.getQuantity();
-                            sum = sum + total;
-                    %>
-                    <tr>
-                        <td class="text-center"><em><%=food.getFoodname()%> </em></td>
-                        <td class="text-center"><%=food.getPrice()%>원</td>
-                        <td class="text-center"><%=food.getQuantity()%>개</td>
-                        <td class="text-center"><%=total%>원</td>
-                    </tr>
-                    <%
-                        }
-                    %>
-                    <tr>
-                        <td></td>
-                        <td></td>
-                        <td class="text-right"><strong>총 금액: </strong></td>
-                        <td class="text-center text-danger"><strong><%=sum %>원 </strong></td>
-                    </tr>
-                </table>
-               
-            <a href="./shippingCart.jsp?cartId=<%=shipping_cartId%>" class="btn btn-secondary" role="button"> 이전 </a>
-            <a href="./thankCust.jsp" class="btn btn-success" role="button"> 주문 완료 </a>
+
+            <div class="col-lg-4">
+                <div class="g-summary">
+                    <h3 class="fs-5 fw-bold mb-2"><i class="bi bi-geo-alt-fill text-success"></i> 배송 주소</h3>
+                    <div class="g-summary-row"><span>성명</span><span><%out.println(shipping_name); %></span></div>
+                    <div class="g-summary-row"><span>우편번호</span><span><%out.println(shipping_zipCode); %></span></div>
+                    <div class="g-summary-row"><span>주소</span><span class="text-end"><%out.println(shipping_addressName); %>(<%out.println(shipping_country); %>)</span></div>
+                    <div class="g-summary-row"><span>배송일</span><span><%out.println(shipping_shippingDate); %></span></div>
+                    <div class="g-summary-row total"><span>결제 금액</span><span><%=sum %>원</span></div>
+                    <a href="./thankCust.jsp" class="g-btn block mt-3" role="button"> 주문 완료 </a>
+                    <a href="./shippingCart.jsp?cartId=<%=shipping_cartId%>" class="g-btn ghost block mt-2" role="button"> 이전 </a>
+                </div>
             </div>
         </div>
-    </div>
+        <jsp:include page="footer.jsp" />
+    </main>
 </body>
 </html>

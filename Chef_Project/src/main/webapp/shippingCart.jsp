@@ -4,91 +4,86 @@
 <%@ page import="dao.FoodRepository" %>
 <html>
 <head>
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+<%@ include file="head.jsp" %>
 <%
     String FoodCartId = session.getId();
 %>
 <title>장바구니</title>
 </head>
 <body>
-<div class="container py-4">
     <%@ include file="top.jsp" %>
+<main class="g-app">
 
-    <div class="p-5 mb-4 bg-body-tertiary rounded-3">
-        <div class="container-fluid py-5">
-            <h1 class="display-5 fw-bold">장바구니</h1>
-            <p class="col-md-8 fs-4">FoodCart</p>
+    <div class="g-page-head">
+        <div>
+            <h1>장바구니</h1>
+            <p>FoodCart · 주문할 식재료를 선택하세요</p>
         </div>
     </div>
 
    <form action="./deliveryIN.jsp" method="post">
       <input type="hidden" name="FoodCartId" value="<%=FoodCartId%>" />
-   
-       <div class="row align-items-md-stretch">
-           <div class="row">
-               <table width="100%">
-                   <tr>
-                       <td align="right">
-                           <button type="submit" class="btn btn-success">주문하기</a>
-                       </td>
-                   </tr>
-               </table>
-           </div>
 
-           <div style="padding-top: 50px">
-               <table class="table table-hover">
-                   <tr>
-                       <th>선택</th>
-                       <th>식재료명</th>
-                       <th>가격</th>
-                       <th>유통기한</th>
-                       <th>수량</th>
-                       <th>합계</th>
-                       <th>비고</th>
-                   </tr>
-                   <%
-                       int sum = 0;
-                       ArrayList<Food> FoodCartList = (ArrayList<Food>) session.getAttribute("FoodCartList");
-                       if (FoodCartList == null) {
-                          FoodCartList = new ArrayList<Food>();
-                       }
+      <div class="row g-4">
+          <div class="col-lg-8">
+              <%
+                  int sum = 0;
+                  ArrayList<Food> FoodCartList = (ArrayList<Food>) session.getAttribute("FoodCartList");
+                  if (FoodCartList == null) {
+                     FoodCartList = new ArrayList<Food>();
+                  }
 
-                       for (int i = 0; i < FoodCartList.size(); i++) { //상품리스트 하나씩 출력
-                           Food food = FoodCartList.get(i);
-                           int total = food.getPrice() * food.getQuantity();
-                           sum = sum + total;
-                   %>
-                   <tr>
-                      <!-- 장바구니 속 체크박스 -->
-                      <td>
-                           <input type="checkbox" name="checkedBox" value="<%=food.getFoodname()%>" checked />
-                       </td>
-                    
-                       <td><%=food.getFoodname()%></td>
-                       <td><%=food.getPrice()%>원</td>
-                       <td><%=food.getDate()%></td>
-                       <td><%=food.getQuantity()%>개</td>
-                       <td><%=total%>원</td>
-                       <td>
-                           <a href="./deleteCart.jsp?id=<%=food.getFoodname()%>" class="badge text-bg-danger">삭제</a>
-                       </td>
-                   </tr>
-                   <%
-                       }
-                   %>
-                   <tr>
-                       <th></th>
-                       <th></th>
-                       <th></th> <th>총금액</th>
-                       <th><%=sum%>원</th>
-                       <th></th>
-                       <th></th>
-                   </tr>
-               </table>
-               <a href="./foodList.jsp" class="btn btn-secondary"> &laquo; 쇼핑 계속하기</a>
-           </div>
-       </div>
-    </form> <jsp:include page="footer.jsp" />
-</div>
+                  if (FoodCartList.size() == 0) {
+              %>
+              <div class="g-empty">
+                  <div class="g-empty-ico">🧺</div>
+                  <b>장바구니가 비어 있어요</b>
+                  식재료 마트에서 맛있는 재료를 담아보세요!
+              </div>
+              <%
+                  }
+
+                  for (int i = 0; i < FoodCartList.size(); i++) { //상품리스트 하나씩 출력
+                      Food food = FoodCartList.get(i);
+                      int total = food.getPrice() * food.getQuantity();
+                      sum = sum + total;
+              %>
+              <div class="g-cart-row">
+                  <!-- 장바구니 속 체크박스 -->
+                  <input type="checkbox" class="g-check" name="checkedBox" value="<%=food.getFoodname()%>" checked aria-label="<%=food.getFoodname()%> 선택" />
+
+                  <div class="g-cart-thumb">
+                      <img src="./resources/images/<%=food.getFilename()%>" alt="<%=food.getFoodname()%>" onerror="this.style.display='none'">
+                  </div>
+
+                  <div class="g-cart-info">
+                      <b><%=food.getFoodname()%></b>
+                      <small><%=food.getPrice()%>원 · 유통기한 <span class="text-nowrap"><%=food.getDate()%></span></small>
+                      <div class="g-qty"><span><%=food.getQuantity()%>개</span></div>
+                  </div>
+
+                  <div class="g-cart-right">
+                      <a href="./deleteCart.jsp?id=<%=java.net.URLEncoder.encode(food.getFoodname(), "UTF-8")%>" class="g-x" aria-label="삭제"><i class="bi bi-x-lg"></i></a>
+                      <span class="g-price"><%=total%>원</span>
+                  </div>
+              </div>
+              <%
+                  }
+              %>
+              <a href="./foodList.jsp" class="g-btn ghost sm mt-4"><i class="bi bi-chevron-left"></i> 쇼핑 계속하기</a>
+          </div>
+
+          <div class="col-lg-4">
+              <div class="g-summary">
+                  <div class="g-summary-row"><span>담은 식재료</span><span><%=FoodCartList.size()%>종류</span></div>
+                  <div class="g-summary-row"><span>배송비</span><span>무료</span></div>
+                  <div class="g-summary-row total"><span>총금액</span><span><%=sum%>원</span></div>
+                  <button type="submit" class="g-btn block mt-3">주문하기 <span class="g-btn-tag"><%=sum%>원</span></button>
+              </div>
+          </div>
+      </div>
+    </form>
+    <jsp:include page="footer.jsp" />
+</main>
 </body>
 </html>
