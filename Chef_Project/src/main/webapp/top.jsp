@@ -30,6 +30,10 @@
 		</nav>
 
 		<div class="d-flex gap-2 ms-auto ms-lg-0">
+			<!-- PWA: 설치 가능할 때만 표시 -->
+			<button type="button" class="g-icon-btn g-install" data-pwa-install hidden aria-label="앱 설치" title="앱 설치">
+				<i class="bi bi-download"></i>
+			</button>
 			<!-- 모바일: 관리자 메뉴 -->
 			<div class="dropdown d-lg-none">
 				<button class="g-icon-btn" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="관리 메뉴">
