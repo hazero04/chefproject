@@ -9,7 +9,7 @@
 <main class="g-app">
 
 	<div class="g-auth">
-		<div class="g-brand-logo">🥕</div>
+		<div class="g-brand-logo"><img src="./resources/icons/logo.png" alt="방구석 셰프 로고"></div>
 		<h1>로그인</h1>
 		<p class="lead">Login · 관리자 아이디와 비밀번호를 입력하세요</p>
 		<%

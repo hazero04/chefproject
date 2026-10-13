@@ -12,7 +12,7 @@
 <header class="g-topbar">
 	<div class="g-topbar-inner">
 		<a href="./mainhome.jsp" class="g-brand">
-			<span class="g-brand-logo">🥕</span>
+			<span class="g-brand-logo"><img src="./resources/icons/logo.png" alt="방구석 셰프 로고"></span>
 			<span>
 				<span class="g-brand-name d-block">방구석 셰프</span>
 				<span class="g-brand-sub"><i class="bi bi-geo-alt-fill"></i> Chef's Refrigerator</span>

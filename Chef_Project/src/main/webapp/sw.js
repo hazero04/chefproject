@@ -2,7 +2,7 @@
  * - 화면(JSP) : 네트워크 우선, 오프라인이면 마지막으로 본 화면 → offline.html
  * - 정적 파일(css/js/이미지/폰트) : 캐시 우선 + 백그라운드 갱신
  */
-const VERSION = 'chef-v1';
+const VERSION = 'chef-v2';
 const STATIC_CACHE = VERSION + '-static';
 const PAGE_CACHE = VERSION + '-pages';
 
@@ -16,6 +16,7 @@ const PRECACHE = [
   './resources/js/bootstrap.bundle.min.js',
   './resources/js/pwa.js',
   './resources/icons/icon-192.png',
+  './resources/icons/logo.png',
   './resources/icons/favicon-32.png'
 ];
 

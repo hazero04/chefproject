@@ -2,7 +2,7 @@
  * 앱 화면과 이미지를 미리 저장해 두어 오프라인에서도 전체 기능이 동작합니다.
  * 파일을 바꾼 뒤에는 VERSION 을 올려 주세요.
  */
-const VERSION = 'chef-pages-v1';
+const VERSION = 'chef-pages-v2';
 
 const FOOD_IMAGES = ['감자', '계란', '당근', '마늘', '버섯', '시금치', '양배추', '양파', '콩나물', '토마토']
   .map((n) => './assets/images/' + encodeURIComponent(n) + '.jpg');
@@ -18,6 +18,7 @@ const PRECACHE = [
   './assets/vendor/bootstrap-icons/bootstrap-icons.min.css',
   './assets/vendor/bootstrap-icons/fonts/bootstrap-icons.woff2',
   './assets/icons/icon-192.png',
+  './assets/icons/logo.png',
   './assets/icons/favicon-32.png',
   ...FOOD_IMAGES
 ];

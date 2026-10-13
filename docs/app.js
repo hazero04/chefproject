@@ -47,7 +47,7 @@
   }
   function img(f, alt, extra) {
     return '<img src="' + esc(imgSrc(f)) + '" alt="' + esc(alt) + '" loading="lazy" ' + (extra || '') +
-      ' onerror="this.onerror=null;this.src=\'./assets/icons/icon-192.png\'">';
+      ' onerror="this.onerror=null;this.src=\'./assets/icons/logo.png\'">';
   }
   function food(name) { return state.foods.filter(function (f) { return f.name === name; })[0]; }
   function enc(s) { return encodeURIComponent(s); }

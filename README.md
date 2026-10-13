@@ -38,6 +38,7 @@ python3 tools/build_pages.py   # CSS/아이콘/이미지 복사 + SQL → docs/d
 3. Eclipse에서 Tomcat 10.1 서버로 실행 → `http://localhost:8080/<컨텍스트>/mainhome.jsp`
 
 PWA 관련 파일: `manifest.json`, `sw.js`, `offline.html`, `resources/js/pwa.js`, `resources/icons/`
+로고 원본은 `design/logo-source.png` 이고, 앱 아이콘·로고는 `resources/icons/` 에 있습니다.
 (Bootstrap·아이콘은 오프라인에서도 동작하도록 `resources/` 아래에 포함되어 있습니다.)
 
 > 서비스워커는 `localhost` 또는 `https` 에서만 동작합니다.
