@@ -59,8 +59,7 @@
     return Math.round((d - t) / 86400000);
   }
   function footer() {
-    return '<footer class="g-footer">&copy; <b>Chef_Project</b> 쩝쩝박사 · 방구석 셰프' +
-      '<div class="mt-1">GitHub Pages 데모 · 데이터는 이 브라우저에만 저장돼요</div></footer>';
+    return '<footer class="g-footer">&copy; <b>Chef_Project</b> 쩝쩝박사 · 방구석 셰프</footer>';
   }
   function pageHead(title, sub, back, right) {
     return '<div class="g-page-head"><div class="d-flex align-items-center">' +
