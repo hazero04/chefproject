@@ -546,7 +546,7 @@
     document.querySelectorAll('[data-nav]').forEach(function (a) {
       a.classList.toggle('active', a.getAttribute('data-nav').split(' ').indexOf(p.route) > -1);
     });
-    centerActiveNav();
+    closeTabMenu();
     var user = currentUser();
     document.querySelectorAll('[data-auth]').forEach(function (a) {
       a.href = user ? '#/logout' : '#/login';
@@ -558,15 +558,18 @@
     document.querySelectorAll('[data-cart-badge]').forEach(function (b) { b.textContent = count; b.hidden = count === 0; });
   }
 
-  // 좁은 화면: 현재 메뉴가 보이도록 메뉴 줄을 가로로 이동
-  function centerActiveNav() {
-    var nav = document.querySelector('.g-nav'), a = nav && nav.querySelector('a.active');
-    if (!nav || !a || nav.scrollWidth <= nav.clientWidth) return;
-    nav.scrollLeft = a.offsetLeft - (nav.clientWidth - a.offsetWidth) / 2;
+  // 하단 탭바 '관리' 메뉴 (식재료 등록 / 수정)
+  function closeTabMenu(except) {
+    document.querySelectorAll('[data-tab-more]').forEach(function (b) {
+      var open = b === except && b.nextElementSibling.hidden;
+      b.nextElementSibling.hidden = !open;
+      b.setAttribute('aria-expanded', String(open));
+    });
   }
 
   /* ---------- 공통 이벤트 ---------- */
   document.addEventListener('click', function (e) {
+    closeTabMenu(e.target.closest('[data-tab-more]'));
     var t;
     if ((t = e.target.closest('[data-add]'))) { e.preventDefault(); confirmAdd(t.getAttribute('data-add')); }
     else if ((t = e.target.closest('[data-del-cart]'))) {

@@ -26,11 +26,15 @@
 		document.querySelectorAll('[data-pwa-install]').forEach(function (b) { b.hidden = true; });
 	});
 
-	// 좁은 화면: 현재 메뉴가 보이도록 메뉴 줄을 가로로 이동
-	(function () {
-		var nav = document.querySelector('.g-nav'), a = nav && nav.querySelector('a.active');
-		if (nav && a && nav.scrollWidth > nav.clientWidth) nav.scrollLeft = a.offsetLeft - (nav.clientWidth - a.offsetWidth) / 2;
-	})();
+	// 하단 탭바 '관리' 메뉴 열기/닫기
+	document.addEventListener('click', function (e) {
+		var btn = e.target.closest && e.target.closest('[data-tab-more]');
+		document.querySelectorAll('[data-tab-more]').forEach(function (b) {
+			var menu = b.nextElementSibling, open = b === btn && menu.hidden;
+			menu.hidden = !open;
+			b.setAttribute('aria-expanded', String(open));
+		});
+	});
 
 	// 오프라인 안내 바
 	function updateOnline() { document.documentElement.classList.toggle('g-offline', !navigator.onLine); }

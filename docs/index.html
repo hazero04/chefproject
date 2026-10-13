@@ -31,16 +31,7 @@
       </span>
     </a>
 
-    <nav class="g-nav">
-      <a href="#/" data-nav="home">홈</a>
-      <a href="#/list" data-nav="list food">식재료 마트</a>
-      <a href="#/recipe" data-nav="recipe">레시피 추천</a>
-      <a href="#/fridge" data-nav="fridge">나의 냉장고</a>
-      <a href="#/admin/add" data-nav="admin-add">식재료 등록</a>
-      <a href="#/admin/edit" data-nav="admin-edit">식재료 수정</a>
-    </nav>
-
-    <div class="d-flex gap-2 ms-auto ms-lg-0 align-items-center">
+    <div class="d-flex gap-2 ms-auto align-items-center">
       <button type="button" class="g-icon-btn g-install" data-pwa-install hidden aria-label="앱 설치" title="앱 설치">
         <i class="bi bi-download"></i>
       </button>
@@ -56,6 +47,22 @@
 <main class="g-app" id="app" tabindex="-1">
   <noscript><div class="g-empty"><b>JavaScript를 켜 주세요</b>방구석 셰프는 JavaScript가 필요해요.</div></noscript>
 </main>
+
+<!-- 하단 탭바 (모든 화면 공통) -->
+<nav class="g-tabbar" aria-label="메뉴">
+  <a href="#/" data-nav="home"><i class="bi bi-shop"></i>홈</a>
+  <a href="#/list" data-nav="list food"><i class="bi bi-search"></i>마트</a>
+  <a href="#/recipe" data-nav="recipe"><i class="bi bi-egg-fried"></i>레시피</a>
+  <a href="#/fridge" data-nav="fridge"><i class="bi bi-snow2"></i>냉장고</a>
+  <a href="#/cart" data-nav="cart delivery payment"><i class="bi bi-cart3"><span class="g-badge" data-cart-badge hidden></span></i>장바구니</a>
+  <div class="g-tab-more">
+    <button type="button" class="g-tab-btn" data-tab-more data-nav="admin-add admin-edit login" aria-expanded="false" aria-haspopup="true"><i class="bi bi-sliders"></i>관리</button>
+    <div class="g-tab-menu" hidden>
+      <a href="#/admin/add" data-nav="admin-add"><i class="bi bi-plus-circle"></i>식재료 등록</a>
+      <a href="#/admin/edit" data-nav="admin-edit"><i class="bi bi-pencil-square"></i>식재료 수정</a>
+    </div>
+  </div>
+</nav>
 
 </body>
 </html>

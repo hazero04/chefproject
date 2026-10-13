@@ -3,7 +3,7 @@
  * - 이미지/폰트 : 저장본 우선 (+ 백그라운드 갱신)
  * 처음 방문 때 전체를 미리 저장해 두어 오프라인에서도 모든 기능이 동작합니다.
  */
-const VERSION = 'chef-pages-v5';
+const VERSION = 'chef-pages-v6';
 
 const FOOD_IMAGES = ['감자', '계란', '당근', '마늘', '버섯', '시금치', '양배추', '양파', '콩나물', '토마토']
   .map((n) => './assets/images/' + encodeURIComponent(n) + '.jpg');
