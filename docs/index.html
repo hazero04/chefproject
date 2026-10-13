@@ -17,10 +17,6 @@
 <link href="./assets/vendor/bootstrap-icons/bootstrap-icons.min.css" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" rel="stylesheet">
 <link href="./assets/css/grocery.css" rel="stylesheet">
-<style>
-  .g-menu { position: relative; }
-  .g-menu .dropdown-menu { right: 0; top: calc(100% + 6px); left: auto; }
-</style>
 <script src="./data.js" defer></script>
 <script src="./app.js" defer></script>
 </head>
@@ -35,7 +31,7 @@
       </span>
     </a>
 
-    <nav class="g-nav d-none d-lg-flex">
+    <nav class="g-nav">
       <a href="#/" data-nav="home">홈</a>
       <a href="#/list" data-nav="list food">식재료 마트</a>
       <a href="#/recipe" data-nav="recipe">레시피 추천</a>
@@ -44,21 +40,11 @@
       <a href="#/admin/edit" data-nav="admin-edit">식재료 수정</a>
     </nav>
 
-    <div class="d-flex gap-2 ms-auto ms-lg-0">
+    <div class="d-flex gap-2 ms-auto ms-lg-0 align-items-center">
       <button type="button" class="g-icon-btn g-install" data-pwa-install hidden aria-label="앱 설치" title="앱 설치">
         <i class="bi bi-download"></i>
       </button>
-      <div class="g-menu d-lg-none">
-        <button class="g-icon-btn" type="button" id="adminToggle" aria-expanded="false" aria-label="관리 메뉴">
-          <i class="bi bi-sliders"></i>
-        </button>
-        <ul class="dropdown-menu shadow border-0 rounded-4 p-2" id="adminMenu">
-          <li><a class="dropdown-item rounded-3 py-2" href="#/admin/add"><i class="bi bi-plus-circle me-2 text-success"></i>식재료 등록</a></li>
-          <li><a class="dropdown-item rounded-3 py-2" href="#/admin/edit"><i class="bi bi-pencil-square me-2 text-success"></i>식재료 수정</a></li>
-          <li><hr class="dropdown-divider"></li>
-          <li><a class="dropdown-item rounded-3 py-2 text-danger" href="#/reset"><i class="bi bi-arrow-counterclockwise me-2"></i>데모 데이터 초기화</a></li>
-        </ul>
-      </div>
+      <a href="#/login" class="g-login" data-auth title="관리자 로그인"><i class="bi bi-person-circle"></i><span>로그인</span></a>
       <a href="#/cart" class="g-icon-btn" aria-label="장바구니">
         <i class="bi bi-cart3"></i>
         <span class="g-badge" data-cart-badge hidden></span>
@@ -71,12 +57,5 @@
   <noscript><div class="g-empty"><b>JavaScript를 켜 주세요</b>방구석 셰프는 JavaScript가 필요해요.</div></noscript>
 </main>
 
-<nav class="g-tabbar d-lg-none">
-  <a href="#/" data-nav="home"><i class="bi bi-shop"></i>홈</a>
-  <a href="#/list" data-nav="list food"><i class="bi bi-search"></i>마트</a>
-  <a href="#/recipe" data-nav="recipe"><i class="bi bi-egg-fried"></i>레시피</a>
-  <a href="#/fridge" data-nav="fridge"><i class="bi bi-snow2"></i>냉장고</a>
-  <a href="#/cart" data-nav="cart delivery payment"><i class="bi bi-cart3"><span class="g-badge" data-cart-badge hidden></span></i>장바구니</a>
-</nav>
 </body>
 </html>

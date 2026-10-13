@@ -6,6 +6,20 @@
   'use strict';
 
   var DATA = window.CHEF_DATA || { foods: [], recipes: [] };
+
+  /* 관리자 계정 (JSP 버전의 web.xml FORM 로그인과 같은 역할)
+   * GitHub Pages 는 서버가 없어서 브라우저에서 확인하는 간단한 잠금입니다. */
+  var ADMIN = { id: 'admin', password: 'chef1234' };
+  var AUTH_KEY = 'chef.auth';
+  var authMem = null;
+  function currentUser() {
+    try { return sessionStorage.getItem(AUTH_KEY); } catch (e) { return authMem; }
+  }
+  function setUser(id) {
+    authMem = id;
+    try { id ? sessionStorage.setItem(AUTH_KEY, id) : sessionStorage.removeItem(AUTH_KEY); } catch (e) { /* 메모리로만 */ }
+  }
+  var loginNext = '#/admin/add', loginError = false;
   var app = document.getElementById('app');
   var KEY = 'chef.state.v1';
 
@@ -447,7 +461,8 @@
     });
   }
   views['admin-add'] = function () {
-    return pageHead('식재료 추가', 'Ingredient Addition') + foodForm(null, false) + footer();
+    return pageHead('식재료 추가', 'Ingredient Addition', null,
+      '<a href="#/logout" class="g-btn outline sm"><i class="bi bi-box-arrow-right"></i> logout</a>') + foodForm(null, false) + footer();
   };
   views['admin-add'].after = function () { bindFoodForm(null); };
 
@@ -459,12 +474,36 @@
         '<div class="row g-4"><div class="col-lg-5"><div class="g-detail-img">' + img(f.filename, f.name) + '</div></div>' +
         '<div class="col-lg-7">' + foodForm(f, true) + '</div></div>' + footer();
     }
-    return pageHead('식재료 수정', 'FoodEditing · 수정할 식재료를 선택하세요') +
+    return pageHead('식재료 수정', 'FoodEditing · 수정할 식재료를 선택하세요', null,
+      '<a href="#/reset" class="g-btn ghost sm"><i class="bi bi-arrow-counterclockwise"></i> 데이터 초기화</a>') +
       '<div class="row g-3">' + state.foods.map(function (f) {
         return productCard(f, '<a href="#/admin/edit/' + enc(f.name) + '" class="g-add" aria-label="수정"><i class="bi bi-pencil"></i></a>');
       }).join('') + '</div>' + footer();
   };
   views['admin-edit'].after = function (name) { if (name && document.getElementById('foodForm')) bindFoodForm(name); };
+
+  views.login = function () {
+    if (currentUser()) { go(loginNext); return ''; }
+    return '<div class="g-auth"><div class="g-brand-logo"><img src="./assets/icons/logo.png" alt="방구석 셰프 로고"></div>' +
+      '<h1>로그인</h1><p class="lead">Login · 관리자 아이디와 비밀번호를 입력하세요</p>' +
+      (loginError ? '<div class="g-alert py-3"><i class="bi bi-exclamation-circle-fill text-danger me-1"></i> 아이디와 비밀번호를 확인해 주세요</div>' : '') +
+      '<form id="loginForm">' +
+      '<div class="g-field"><label for="j_username">ID</label><input type="text" class="form-control" id="j_username" placeholder="ID" autocomplete="username" required autofocus></div>' +
+      '<div class="g-field"><label for="j_password">Password</label><input type="password" class="form-control" id="j_password" placeholder="Password" autocomplete="current-password" required></div>' +
+      '<button class="g-btn block mt-2" type="submit">로그인</button></form></div>' + footer();
+  };
+  views.login.after = function () {
+    var form = document.getElementById('loginForm');
+    if (!form) return;
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      if (form.j_username.value.trim() === ADMIN.id && form.j_password.value === ADMIN.password) {
+        setUser(ADMIN.id); loginError = false; go(loginNext);
+      } else {
+        loginError = true; render();
+      }
+    });
+  };
 
   views.error = function (name) {
     return '<div class="g-empty"><div class="g-empty-ico">🥲</div><b>해당 식재료가 존재하지 않습니다.</b>' +
@@ -487,6 +526,12 @@
   function render() {
     if (clockTimer) { clearInterval(clockTimer); clockTimer = null; }
     var p = parse();
+    if (p.route === 'logout') { setUser(null); go('#/'); return; }
+    if (/^admin-/.test(p.route) && !currentUser()) {
+      // JSP 버전처럼 관리자 페이지는 로그인 후에만
+      loginNext = location.hash; loginError = false; go('#/login'); return;
+    }
+    if (p.route !== 'login') loginError = false;
     if (p.route === 'reset') {
       if (confirm('장바구니, 냉장고, 등록한 식재료를 처음 상태로 되돌릴까요?')) { state = freshState(); save(); }
       go('#/'); return;
@@ -501,21 +546,27 @@
     document.querySelectorAll('[data-nav]').forEach(function (a) {
       a.classList.toggle('active', a.getAttribute('data-nav').split(' ').indexOf(p.route) > -1);
     });
+    centerActiveNav();
+    var user = currentUser();
+    document.querySelectorAll('[data-auth]').forEach(function (a) {
+      a.href = user ? '#/logout' : '#/login';
+      a.classList.toggle('on', !!user);
+      a.title = user ? user + ' 로그아웃' : '관리자 로그인';
+      a.innerHTML = user ? '<i class="bi bi-box-arrow-right"></i><span>로그아웃</span>' : '<i class="bi bi-person-circle"></i><span>로그인</span>';
+    });
     var count = state.cart.length;
     document.querySelectorAll('[data-cart-badge]').forEach(function (b) { b.textContent = count; b.hidden = count === 0; });
-    closeMenu();
+  }
+
+  // 좁은 화면: 현재 메뉴가 보이도록 메뉴 줄을 가로로 이동
+  function centerActiveNav() {
+    var nav = document.querySelector('.g-nav'), a = nav && nav.querySelector('a.active');
+    if (!nav || !a || nav.scrollWidth <= nav.clientWidth) return;
+    nav.scrollLeft = a.offsetLeft - (nav.clientWidth - a.offsetWidth) / 2;
   }
 
   /* ---------- 공통 이벤트 ---------- */
-  var menu = document.getElementById('adminMenu'), toggle = document.getElementById('adminToggle');
-  function closeMenu() { menu.classList.remove('show'); toggle.setAttribute('aria-expanded', 'false'); }
-  toggle.addEventListener('click', function (e) {
-    e.stopPropagation();
-    var open = !menu.classList.contains('show');
-    menu.classList.toggle('show', open); toggle.setAttribute('aria-expanded', String(open));
-  });
   document.addEventListener('click', function (e) {
-    if (!e.target.closest('.g-menu')) closeMenu();
     var t;
     if ((t = e.target.closest('[data-add]'))) { e.preventDefault(); confirmAdd(t.getAttribute('data-add')); }
     else if ((t = e.target.closest('[data-del-cart]'))) {

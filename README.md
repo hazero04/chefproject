@@ -27,6 +27,10 @@ python3 tools/build_pages.py   # CSS/아이콘/이미지 복사 + SQL → docs/d
 ```
 화면 로직은 `docs/app.js`, 캐시 목록은 `docs/sw.js` 입니다. (`sw.js`의 `VERSION`을 올리면 설치된 앱도 새 파일을 받습니다.)
 
+### 관리자 로그인 (식재료 등록·수정)
+- 헤더의 **로그인** 버튼 → 아이디 `admin` / 비밀번호 `chef1234`
+- 계정은 `docs/app.js` 맨 위 `ADMIN` 에서 바꿀 수 있어요. 서버가 없는 정적 사이트라 브라우저에서 확인하는 간단한 잠금입니다.
+
 ## 📲 앱으로 설치 (PWA)
 - **Android / PC 크롬·엣지**: 상단의 ⬇️ 설치 버튼 또는 주소창의 설치 아이콘
 - **iPhone (Safari)**: 공유 버튼 → **홈 화면에 추가**
@@ -36,6 +40,7 @@ python3 tools/build_pages.py   # CSS/아이콘/이미지 복사 + SQL → docs/d
 1. MySQL에 `ChefDB` 생성 후 `resources/sql/` 의 `food.sql → insert.sql → refri.sql → recipe.sql` 순서로 실행
 2. `dbconnect.jsp` 의 접속 정보 확인 (기본 `root / root`)
 3. Eclipse에서 Tomcat 10.1 서버로 실행 → `http://localhost:8080/<컨텍스트>/mainhome.jsp`
+4. 관리자 로그인: Eclipse `Servers/tomcat-users.xml` 에 `admin` 역할(role)을 가진 사용자를 등록한 뒤, 헤더의 **로그인** 버튼으로 로그인 (식재료 등록·수정 페이지는 로그인해야 열림)
 
 PWA 관련 파일: `manifest.json`, `sw.js`, `offline.html`, `resources/js/pwa.js`, `resources/icons/`
 로고 원본은 `design/logo-source.png` 이고, 앱 아이콘·로고는 `resources/icons/` 에 있습니다.

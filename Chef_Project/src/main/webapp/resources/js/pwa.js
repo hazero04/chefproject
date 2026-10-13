@@ -26,6 +26,12 @@
 		document.querySelectorAll('[data-pwa-install]').forEach(function (b) { b.hidden = true; });
 	});
 
+	// 좁은 화면: 현재 메뉴가 보이도록 메뉴 줄을 가로로 이동
+	(function () {
+		var nav = document.querySelector('.g-nav'), a = nav && nav.querySelector('a.active');
+		if (nav && a && nav.scrollWidth > nav.clientWidth) nav.scrollLeft = a.offsetLeft - (nav.clientWidth - a.offsetWidth) / 2;
+	})();
+
 	// 오프라인 안내 바
 	function updateOnline() { document.documentElement.classList.toggle('g-offline', !navigator.onLine); }
 	window.addEventListener('online', updateOnline);
